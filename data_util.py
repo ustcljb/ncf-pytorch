@@ -26,10 +26,11 @@ def load_all(data_file):
 		line = fd.readline()
 		while line != None and line != '':
 			arr = line.split('\t')
-			u = eval(arr[0])[0]
-			test_data.append([u, eval(arr[0])[1]])
+			user = eval(arr[0])[0]
+			item = eval(arr[0])[1]
+			test_data.append([user, item])
 			for i in arr[1:]:
-				test_data.append([u, int(i)])
+				test_data.append([user, int(i)])
 			line = fd.readline()
 	return train_data, test_data, user_num, item_num, train_mat
 
