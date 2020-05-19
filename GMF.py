@@ -19,7 +19,7 @@ parser.add_argument("--dropout", type=float, default=0.0, help="dropout rate")
 parser.add_argument("--batch_size", type=int, default=256, help="batch size for training")
 parser.add_argument("--epochs", type=int, default=20, help="training epoches")
 parser.add_argument("--top_k", type=int, default=10, help="compute metrics@top_k")
-parser.add_argument("--embedding_dim", type=int, default=16, help="dimension of embedding")
+parser.add_argument("--embedding_dim", type=int, default=128, help="dimension of embedding")
 parser.add_argument("--num_ng", type=int, default=4, help="sample negative items for training")
 parser.add_argument("--test_num_ng", type=int, default=99, help="sample part of negative items for testing")
 parser.add_argument("--data_set", type=str, default="ml-1m", help="data set. 'ml-1m' or 'pinterest-20'")
@@ -58,7 +58,7 @@ class GMF(nn.Module):
         nn.init.normal_(self.embed_user.weight, std=0.01)
         nn.init.normal_(self.embed_item.weight, std=0.01)
 
-        nn.init.kaiming_uniform_(self.predict_layer.weight, a=0.01, nonlinearity='leaky_relu')
+        nn.init.kaiming_uniform_(self.predict_layer.weight, a=1, nonlinearity='sigmoid')
 
 
         # Kaiming/Xavier initialization can not deal with non-zero bias terms
@@ -69,7 +69,7 @@ class GMF(nn.Module):
         embed_user = self.embed_user(user)
         embed_item = self.embed_item(item)
         output = embed_user * embed_item
-        prediction = torch.sigmoid(self.predict_layer(output))
+        prediction = self.predict_layer(output)
         return prediction.view(-1)
 
 if __name__=="__main__":
