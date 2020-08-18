@@ -23,8 +23,8 @@ parser.add_argument("--embedding_dim", type=int, default=32, help="dimension of 
 parser.add_argument("--num_ng", type=int, default=4, help="sample negative items for training")
 parser.add_argument("--test_num_ng", type=int, default=99, help="sample part of negative items for testing")
 parser.add_argument("--data_set", type=str, default="ml-1m", help="data set. 'ml-1m' or 'pinterest-20'")
-parser.add_argument("--data_path", type=str, default="/Users/JingboLiu/Desktop/ncf_pytorch/data")
-parser.add_argument("--model_path", type=str, default="/Users/JingboLiu/Desktop/ncf_pytorch/model")
+parser.add_argument("--data_path", type=str, default="/Users/JingboLiu/Desktop/ncf-pytorch/data")
+parser.add_argument("--model_path", type=str, default="/Users/JingboLiu/Desktop/ncf-pytorch/model")
 parser.add_argument("--out", default=True, help="save model or not")
 parser.add_argument("--disable-cuda", action="store_true", help="Disable CUDA")
 args = parser.parse_args()
@@ -122,6 +122,6 @@ if __name__=="__main__":
             if args.out:
                 if not os.path.exists(args.model_path):
                     os.mkdir(args.model_path)
-                torch.save(model, os.path.join(args.model_path, 'GMF.pth'))
+                torch.save(model.state_dict(), os.path.join(args.model_path, 'GMF.pth'))
 
     print("End. Best epoch {:03d}: HR = {:.3f}, NDCG = {:.3f}".format(best_epoch, best_hr, best_ndcg))

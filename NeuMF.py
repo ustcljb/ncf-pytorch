@@ -12,6 +12,8 @@ from tensorboardX import SummaryWriter
 
 import data_util
 import evaluate
+import GMF
+import MLP
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=0.001, help="learning rate")
@@ -26,8 +28,8 @@ parser.add_argument("--use_pretrained", action="store_true", help="use pretraine
 parser.add_argument("--num_ng", type=int, default=4, help="sample negative items for training")
 parser.add_argument("--test_num_ng", type=int, default=99, help="sample part of negative items for testing")
 parser.add_argument("--data_set", type=str, default="ml-1m", help="data set. 'ml-1m' or 'pinterest-20'")
-parser.add_argument("--data_path", type=str, default="/Users/JingboLiu/Desktop/ncf_pytorch/data")
-parser.add_argument("--model_path", type=str, default="/Users/JingboLiu/Desktop/ncf_pytorch/model")
+parser.add_argument("--data_path", type=str, default="/Users/JingboLiu/Desktop/ncf-pytorch/data")
+parser.add_argument("--model_path", type=str, default="/Users/JingboLiu/Desktop/ncf-pytorch/model")
 parser.add_argument("--out", default=True, help="save model or not")
 parser.add_argument("--disable-cuda", action="store_true", help="Disable CUDA")
 args = parser.parse_args()
@@ -145,8 +147,11 @@ if __name__=="__main__":
     if args.use_pretrained:
         assert os.path.exists(GMF_model_path), 'lack of GMF model'
         assert os.path.exists(MLP_model_path), 'lack of MLP model'
-        GMF_model = torch.load(GMF_model_path)
-        MLP_model = torch.load(MLP_model_path)
+        GMF_model = GMF.GMF(user_num, item_num, args.embedding_dim_GMF, args.dropout)
+        GMF_model.load_state_dict(torch.load(GMF_model_path))
+        
+        MLP_model = MLP.MLP(user_num, item_num, args.embedding_dim_MLP, args.hidden_layer_MLP, args.dropout)
+        MLP_model.load_state_dict(torch.load(MLP_model_path))
     else:
         GMF_model = None
         MLP_model = None
@@ -195,6 +200,6 @@ if __name__=="__main__":
             if args.out:
                 if not os.path.exists(args.model_path):
                     os.mkdir(args.model_path)
-                torch.save(model, os.path.join(args.model_path, 'MLP.pth'))
+                torch.save(model.state_dict(), os.path.join(args.model_path, 'NeuMF.pth'))
 
     print("End. Best epoch {:03d}: HR = {:.3f}, NDCG = {:.3f}".format(best_epoch, best_hr, best_ndcg))
